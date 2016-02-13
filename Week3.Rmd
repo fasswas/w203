@@ -1,0 +1,82 @@
+---
+title: "R Exercise Week 3"
+author: "Patrick Ng"
+date: "June 3, 2015"
+output: pdf_document
+---
+
+\textbf{Question 1}:
+```{r}
+# Get a list of prime numbers using the Sieve of Eratosthenes method
+prime.sieve = function(n) {  
+  primes = c(2:n) # Create a list of numbers from 2 to n
+
+  i = 1
+  repeat {
+    p = primes[i] # Get the next number from the list
+    
+    # Break if we have exceeded the square root of n
+    if (p > floor(n^0.5)) break
+    
+    # Cross out all multiples of p, except for itself
+    primes = primes[primes == p | primes %% p != 0]
+    
+    i = i + 1 # Move to the next number above p
+    if (i > length(primes)) break # Break if we've exceeded the list size
+  }
+  
+  return(primes)
+}
+```
+
+Examples:
+```{r, echo=TRUE}
+result = prime.sieve(100)
+result
+
+```
+\newpage
+\textbf{Question 2:}
+```{r}
+# Return an estimated value of pi using the Monte Carlo method
+monte.carlo = function(total) {
+  x = runif(total, min=-1, max=1) # Generate a list of random x coordinates
+  y = runif(total, min=-1, max=1) # Generate a list of random y coordinates
+
+  points = data.frame(x, y) # Use a data frame to store all the points
+  
+  # Retain only those points which are within the area of the circle
+  points = subset(points, points$x^2 + points$y^2 <= 1) 
+  
+  # Find out the ratio
+  ratio = nrow(points)/total
+  
+  # Return the pi value
+  return (ratio * 4)
+}
+
+```
+
+Examples:
+```{r, echo=TRUE}
+pi = monte.carlo(10000)
+pi
+
+```
+\newpage
+\textbf{Bonus:}
+\textbf{Var(X) = E(X\textsuperscript{2}) - [E(X)]\textsuperscript{2}}
+
+```{r}
+results = c()
+results_square = c()
+for (i in 1:1000) {
+  pi = monte.carlo(10000)
+  results = c(results, pi)
+  results_square = c(results_square, pi^2)
+}
+
+# theoretical variance
+var = mean(results_square) - (mean(results))^2
+var
+```
